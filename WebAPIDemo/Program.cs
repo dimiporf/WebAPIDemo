@@ -1,6 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -8,33 +9,10 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-// Routing
 
-// "/shirts"
-app.MapGet("/shirts", () =>
-{
-    return $"Reading all the shirts.";
-});
+app.MapControllers();
 
-app.MapGet("/shirts/{id}", (int id) =>
-{
-    return $"Reading shirt with ID: {id}";
-});
 
-app.MapPost("/shirts", () =>
-{
-    return $"Creating a shirt.";
-});
-
-app.MapPut("/shirts/{id}", (int id) =>
-{
-    return $"Updating a shirt with ID: {id}"; 
-});
-
-app.MapDelete("/shirts/{id}", (int id) =>
-{
-    return $"Deleting a shirt with ID: {id}";
-});
 
 app.Run();
 
