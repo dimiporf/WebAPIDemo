@@ -22,10 +22,10 @@ namespace WebAPIDemo.Controllers
             return "Reading all the shirts";
         }
 
-        [HttpGet("{id}/{color}")]
-        public string GetShirtById(int id, string color)
+        [HttpGet("{id}")]
+        public Shirt GetShirtById(int id)
         {
-            return $"Reading shirt with ID: {id}, color: {color}";
+            return shirts.First(x => x.ShirtId == id);
         }
 
         [HttpPost]
