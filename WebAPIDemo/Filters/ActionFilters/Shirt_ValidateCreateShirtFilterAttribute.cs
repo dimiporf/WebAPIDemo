@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using WebAPIDemo.Models;
 using WebAPIDemo.Models.Repositories;
 
-namespace WebAPIDemo.Filters
+namespace WebAPIDemo.Filters.ActionFilters
 {
-    public class Shirt_ValidateCreateShirtFilterAttribute: ActionFilterAttribute
+    public class Shirt_ValidateCreateShirtFilterAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -13,7 +13,7 @@ namespace WebAPIDemo.Filters
 
             var shirt = context.ActionArguments["shirt"] as Shirt;
 
-            if (shirt == null) 
+            if (shirt == null)
             {
                 context.ModelState.AddModelError("Shirt", "Shirt object is null.");
                 var problemDetails = new ValidationProblemDetails(context.ModelState)
