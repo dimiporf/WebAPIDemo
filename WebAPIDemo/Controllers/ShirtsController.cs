@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using WebAPIDemo.Filters;
 using WebAPIDemo.Models;
 using WebAPIDemo.Models.Repositories;
@@ -33,10 +34,22 @@ namespace WebAPIDemo.Controllers
                 shirt);
         }
 
-        [HttpPut("{id}")]        
-        public IActionResult UpdateShirt(int id)
+        [HttpPut("{id}")]
+        [Shirt_ValidateShirtIdFilter]
+        [Shirt_ValidateUpdateShirtFilter]
+        public IActionResult UpdateShirt(int id, Shirt shirt)
         {
-            return Ok($"Updating a shirt with ID: {id}");
+            try
+            {
+            ShirtRepository.UpdateShirt(shirt);
+            }
+            catch
+            {
+                if (!ShirtRepository.ShirtExists(id))
+                    return NotFound();
+            }
+
+            return NoContent();
         }
         [HttpDelete("{id}")]
         public IActionResult DeleteShirt(int id)
