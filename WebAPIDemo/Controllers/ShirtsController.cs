@@ -34,11 +34,11 @@ namespace WebAPIDemo.Controllers
 
         // GET: api/Shirts/5
         [HttpGet("{id}")]
-        [Shirt_ValidateShirtIdFilter] // Validate shirt ID
+        [TypeFilter(typeof(Shirt_ValidateShirtIdFilterAttribute))] // Validate shirt ID
         public IActionResult GetShirtById(int id)
         {
-            // Retrieve a specific shirt by ID from the repository
-            return Ok(ShirtRepository.GetShirtById(id));
+            // Retrieve a specific shirt by ID from the database (after filtering)
+            return Ok(HttpContext.Items["shirt"]);
         }
 
         // POST: api/Shirts
@@ -57,7 +57,7 @@ namespace WebAPIDemo.Controllers
 
         // PUT: api/Shirts/5
         [HttpPut("{id}")]
-        [Shirt_ValidateShirtIdFilter] // Validate shirt ID
+        [TypeFilter(typeof(Shirt_ValidateShirtIdFilterAttribute))] // Validate shirt ID
         [Shirt_ValidateUpdateShirtFilter] // Validate input for updating a shirt
         [Shirt_HandleUpdateExceptionsFilter] // Handle exceptions during shirt update
         public IActionResult UpdateShirt(int id, Shirt shirt)
@@ -71,7 +71,7 @@ namespace WebAPIDemo.Controllers
 
         // DELETE: api/Shirts/5
         [HttpDelete("{id}")]
-        [Shirt_ValidateShirtIdFilter] // Validate shirt ID
+        [TypeFilter(typeof(Shirt_ValidateShirtIdFilterAttribute))] // Validate shirt ID
         public IActionResult DeleteShirt(int id)
         {
             // Retrieve the shirt to be deleted

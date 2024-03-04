@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using WebAPIDemo.Data;
 using WebAPIDemo.Models.Repositories;
 
 namespace WebAPIDemo.Filters.ActionFilters
@@ -7,6 +8,12 @@ namespace WebAPIDemo.Filters.ActionFilters
     // Action filter attribute to validate the shirt ID
     public class Shirt_ValidateShirtIdFilterAttribute : ActionFilterAttribute
     {
+        private readonly ApplicationDbContext db;
+
+        public Shirt_ValidateShirtIdFilterAttribute(ApplicationDbContext db)
+        {
+            this.db = db;
+        }
         // Override the OnActionExecuting method to perform validation before the action method is executed
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -35,19 +42,30 @@ namespace WebAPIDemo.Filters.ActionFilters
                     context.Result = new BadRequestObjectResult(problemDetails);
                 }
                 // Check if the shirt with the given ID does not exist
-                else if (!ShirtRepository.ShirtExists(shirtId.Value))
+                else 
                 {
-                    // Add model error indicating that the shirt does not exist
-                    context.ModelState.AddModelError("ShirtId", "Shirt does not exist.");
+                    var shirt = db.Shirts.Find(shirtId.Value);
 
-                    // Create a validation problem details with 404 Not Found status
-                    var problemDetails = new ValidationProblemDetails(context.ModelState)
+                    if (shirt == null)
                     {
-                        Status = StatusCodes.Status404NotFound
-                    };
+                        // Add model error indicating that the shirt does not exist
+                        context.ModelState.AddModelError("ShirtId", "Shirt does not exist.");
 
-                    // Set the result to NotFoundObjectResult with problem details
-                    context.Result = new NotFoundObjectResult(problemDetails);
+                        // Create a validation problem details with 404 Not Found status
+                        var problemDetails = new ValidationProblemDetails(context.ModelState)
+                        {
+                            Status = StatusCodes.Status404NotFound
+                        };
+
+                        // Set the result to NotFoundObjectResult with problem details
+                        context.Result = new NotFoundObjectResult(problemDetails);
+                    }
+                    else
+                    {
+                        // Make the shirt object available after filtering
+                        context.HttpContext.Items["shirt"] = shirt;
+                    }
+                   
                 }
             }
         }
