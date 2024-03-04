@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Drawing;
+using System.Reflection;
+using WebAPIDemo.Data;
 using WebAPIDemo.Models;
 using WebAPIDemo.Models.Repositories;
 
@@ -8,6 +11,12 @@ namespace WebAPIDemo.Filters.ActionFilters
     // Action filter attribute to validate input for creating a new shirt
     public class Shirt_ValidateCreateShirtFilterAttribute : ActionFilterAttribute
     {
+        private readonly ApplicationDbContext db;
+
+        public Shirt_ValidateCreateShirtFilterAttribute(ApplicationDbContext db)
+        {
+            this.db = db;
+        }
         // Override the OnActionExecuting method to perform validation before the action method is executed
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -35,8 +44,20 @@ namespace WebAPIDemo.Filters.ActionFilters
             else
             {
                 // Check if a shirt with the same properties already exists
-                var existingShirt = ShirtRepository.GetShirtByProperties(shirt.Brand, shirt.Gender, shirt.Color, shirt.Size);
-
+                var existingShirt = db.Shirts.FirstOrDefault(x =>
+                !string.IsNullOrWhiteSpace(shirt.Brand) &&
+                !string.IsNullOrWhiteSpace(x.Brand) &&
+                x.Brand.ToLower() == shirt.Brand.ToLower() &&
+                !string.IsNullOrWhiteSpace(shirt.Gender) &&
+                !string.IsNullOrWhiteSpace(x.Gender) &&
+                x.Gender.ToLower() == shirt.Gender.ToLower() &&
+                !string.IsNullOrWhiteSpace(shirt.Color) &&
+                !string.IsNullOrWhiteSpace(x.Color) &&
+                x.Color.ToLower() == shirt.Color.ToLower() &&
+                shirt.Size.HasValue &&
+                x.Size.HasValue &&
+                shirt.Size.Value == x.Size.Value);
+          
                 if (existingShirt != null)
                 {
                     // Add model error indicating that the shirt already exists

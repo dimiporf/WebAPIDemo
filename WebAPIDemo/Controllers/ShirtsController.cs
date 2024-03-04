@@ -43,11 +43,12 @@ namespace WebAPIDemo.Controllers
 
         // POST: api/Shirts
         [HttpPost]
-        [Shirt_ValidateCreateShirtFilter] // Validate input for creating a shirt
+        [TypeFilter(typeof(Shirt_ValidateCreateShirtFilterAttribute))] // Validate input for creating a shirt
         public IActionResult CreateShirt([FromBody] Shirt shirt)
         {
-            // Add a new shirt to the repository
-            ShirtRepository.AddShirt(shirt);
+            // Add a new shirt to the database
+            this.db.Shirts.Add(shirt);
+            this.db.SaveChanges();
 
             // Return the newly created shirt with a 201 Created status
             return CreatedAtAction(nameof(GetShirtById),
