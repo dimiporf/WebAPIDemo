@@ -84,13 +84,14 @@ namespace WebAPIDemo.Controllers
         public IActionResult DeleteShirt(int id)
         {
             // Retrieve the shirt to be deleted
-            var shirt = ShirtRepository.GetShirtById(id);
+            var shirtToDelete = HttpContext.Items["shirt"] as Shirt;
 
-            // Delete the shirt from the repository
-            ShirtRepository.DeleteShirt(id);
+            // Delete the shirt from the database
+            db.Shirts.Remove(shirtToDelete);
+            db.SaveChanges();
 
             // Return the deleted shirt with a 200 OK status
-            return Ok(shirt);
+            return Ok(shirtToDelete);
         }
     }
 }
