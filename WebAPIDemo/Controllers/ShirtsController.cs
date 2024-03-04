@@ -60,11 +60,19 @@ namespace WebAPIDemo.Controllers
         [HttpPut("{id}")]
         [TypeFilter(typeof(Shirt_ValidateShirtIdFilterAttribute))] // Validate shirt ID
         [Shirt_ValidateUpdateShirtFilter] // Validate input for updating a shirt
-        [Shirt_HandleUpdateExceptionsFilter] // Handle exceptions during shirt update
+        [TypeFilter(typeof(Shirt_HandleUpdateExceptionsFilterAttribute))] //Validate exceptions during shirt update
         public IActionResult UpdateShirt(int id, Shirt shirt)
         {
             // Update an existing shirt in the repository
-            ShirtRepository.UpdateShirt(shirt);
+            var shirtToUpdate = HttpContext.Items["shirt"] as Shirt;
+
+            shirtToUpdate.Brand = shirt.Brand;
+            shirtToUpdate.Price = shirt.Price;
+            shirtToUpdate.Size = shirt.Size;
+            shirtToUpdate.Color = shirt.Color;
+            shirtToUpdate.Gender = shirt.Gender;
+
+            db.SaveChanges();
 
             // Return 204 No Content status after successful update
             return NoContent();
