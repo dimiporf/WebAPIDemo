@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using WebAPIDemo.Data;
 using WebAPIDemo.Filters;
 using WebAPIDemo.Filters.ActionFilters;
 using WebAPIDemo.Filters.ExceptionFilters;
@@ -12,12 +13,23 @@ namespace WebAPIDemo.Controllers
     [Route("api/[controller]")]
     public class ShirtsController : ControllerBase
     {
+        // Define a private field to hold an instance of the ApplicationDbContext.
+        private readonly ApplicationDbContext db;
+
+        // Constructor for the ShirtsController class, which injects an instance of ApplicationDbContext.
+        public ShirtsController(ApplicationDbContext db)
+        {
+            // Initialize the ApplicationDbContext field with the injected instance.
+            this.db = db;
+        }
+
+
         // GET: api/Shirts
         [HttpGet]
         public IActionResult GetShirts()
         {
-            // Retrieve all shirts from the repository
-            return Ok(ShirtRepository.GetShirts());
+            // Retrieve all shirts from the database
+            return Ok(db.Shirts.ToList());
         }
 
         // GET: api/Shirts/5
