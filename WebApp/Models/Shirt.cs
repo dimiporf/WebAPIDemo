@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WebApp.Models.Validations;
 
 namespace WebApp.Models
 {
@@ -17,6 +18,7 @@ namespace WebApp.Models
         public string? Color { get; set; }
 
         // Size of the shirt (nullable)
+        [Shirt_EnsureCorrectSizing]
         public int? Size { get; set; }
 
         // Gender for which the shirt is intended (required field)
