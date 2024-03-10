@@ -48,5 +48,16 @@ namespace WebApp.Controllers
             // If model state is not valid or shirt creation fails, returns to the create shirt view
             return View(shirt);
         }
+
+        public async Task<IActionResult> UpdateShirt(int shirtId)
+        {
+            var shirt = await webApiExecuter.InvokeGet<Shirt>($"shirts/{shirtId}");
+
+            if (shirt != null)
+            {
+                return View(shirt);
+            }
+            return NotFound();
+        }
     }
 }
