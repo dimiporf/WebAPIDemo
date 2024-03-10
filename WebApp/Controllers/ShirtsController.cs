@@ -28,7 +28,8 @@ namespace WebApp.Controllers
             return View();
         }
 
-        // POST: Shirts/Create
+
+        // Handles HTTP POST requests to create a new shirt
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShirt(Shirt shirt)
@@ -36,12 +37,22 @@ namespace WebApp.Controllers
             // Checks if the model state is valid
             if (ModelState.IsValid)
             {
-                // Invokes the API to create a new shirt
-                var response = await webApiExecuter.InvokePost("shirts", shirt);
-                if (response != null)
+                try
                 {
-                    // Redirects to the index action if the shirt creation is successful
-                    return RedirectToAction("Index");
+                    // Invokes the API to create a new shirt
+                    var response = await webApiExecuter.InvokePost("shirts", shirt);
+
+                    // Checks if the response is not null, indicating successful creation
+                    if (response != null)
+                    {
+                        // Redirects to the index action if the shirt creation is successful
+                        return RedirectToAction("Index");
+                    }
+                }
+                // Catches a WebApiException if an error occurs during API invocation
+                catch (WebApiException ex)
+                {
+                    HandleWebApiException(ex);
                 }
             }
 
@@ -49,39 +60,57 @@ namespace WebApp.Controllers
             return View(shirt);
         }
 
+
         // Retrieves the details of a shirt with the specified ID from the API and displays the details in a view for updating
         public async Task<IActionResult> UpdateShirt(int shirtId)
         {
-            // Invoke the API to get the details of the shirt with the specified ID
-            var shirt = await webApiExecuter.InvokeGet<Shirt>($"shirts/{shirtId}");
-
-            // If the shirt details are found, display them in the view for updating
-            if (shirt != null)
+            try
             {
-                return View(shirt);
+                // Invoke the API to get the details of the shirt with the specified ID
+                var shirt = await webApiExecuter.InvokeGet<Shirt>($"shirts/{shirtId}");
+
+                // If the shirt details are found, display them in the view for updating
+                if (shirt != null)
+                {
+                    return View(shirt);
+                }
+            }
+            catch(WebApiException ex)
+            {
+                HandleWebApiException(ex);
+                return View();
             }
 
             // If the shirt with the specified ID is not found, return a 404 Not Found response
             return NotFound();
         }
 
+
         // Handles the POST request to update the shirt details
         [HttpPost]
         public async Task<IActionResult> UpdateShirt(Shirt shirt)
         {
-            // Check if the model state is valid
-            if (ModelState.IsValid)
+            try
             {
-                // Invoke the API to update the shirt details
-                await webApiExecuter.InvokePut($"shirts/{shirt.ShirtId}", shirt);
+                // Check if the model state is valid
+                if (ModelState.IsValid)
+                {
+                    // Invoke the API to update the shirt details
+                    await webApiExecuter.InvokePut($"shirts/{shirt.ShirtId}", shirt);
 
-                // Redirect to the index action after successful update
-                return RedirectToAction(nameof(Index));
+                    // Redirect to the index action after successful update
+                    return RedirectToAction(nameof(Index));
+                }
             }
+            catch (WebApiException ex)
+            {
+                HandleWebApiException (ex);
+            }            
 
             // If the model state is not valid, return the view with the shirt model to display validation errors
             return View(shirt);
         }
+
 
         // Asynchronously deletes a shirt with the specified ID from the API and redirects to the index action
         public async Task<IActionResult> DeleteShirt(int shirtId)
@@ -93,5 +122,20 @@ namespace WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        private void HandleWebApiException(WebApiException ex)
+        {
+            // Checks if the exception contains error response details
+            if (ex.ErrorResponse != null &&
+                ex.ErrorResponse.Errors != null &&
+                ex.ErrorResponse.Errors.Count > 0)
+            {
+                // Adds model errors based on the error response received from the API
+                foreach (var error in ex.ErrorResponse.Errors)
+                {
+                    ModelState.AddModelError(error.Key, string.Join("; ", error.Value));
+                }
+            }
+        }
     }
 }
