@@ -83,5 +83,15 @@ namespace WebApp.Controllers
             return View(shirt);
         }
 
+        // Asynchronously deletes a shirt with the specified ID from the API and redirects to the index action
+        public async Task<IActionResult> DeleteShirt(int shirtId)
+        {
+            // Invoke the API to delete the shirt with the specified ID
+            await webApiExecuter.InvokeDelete($"shirts/{shirtId}");
+
+            // Redirect to the index action after successful deletion
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

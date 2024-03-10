@@ -3,6 +3,8 @@
     // Interface defining methods for executing HTTP requests to a web API
     public interface IWebApiExecuter
     {
+        Task InvokeDelete(string relativeUrl);
+
         // Invokes an HTTP GET request to the specified relative URL of the API
         Task<T?> InvokeGet<T>(string relativeUrl);
 

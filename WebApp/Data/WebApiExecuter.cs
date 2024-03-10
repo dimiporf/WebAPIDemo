@@ -54,5 +54,18 @@
             response.EnsureSuccessStatusCode();
         }
 
+        // Asynchronously sends an HTTP DELETE request to the specified relative URL of the API
+        public async Task InvokeDelete(string relativeUrl)
+        {
+            // Creates a new HttpClient instance using the HttpClientFactory
+            var httpClient = httpClientFactory.CreateClient(apiName);
+
+            // Sends an HTTP DELETE request to the specified relative URL
+            var response = await httpClient.DeleteAsync(relativeUrl);
+
+            // Ensures that the HTTP response indicates success (status code 2xx)
+            response.EnsureSuccessStatusCode();
+        }
+
     }
 }
