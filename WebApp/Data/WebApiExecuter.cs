@@ -40,5 +40,19 @@
             // Reads the response content and deserializes it to the specified type
             return await response.Content.ReadFromJsonAsync<T>();
         }
+
+        // Invokes an HTTP PUT request to the specified relative URL of the API with the provided object as content
+        public async Task InvokePut<T>(string relativeUrl, T obj)
+        {
+            // Creates a new HttpClient instance using the HttpClientFactory
+            var httpClient = httpClientFactory.CreateClient(apiName);
+
+            // Sends an HTTP PUT request to the specified relative URL with the provided object as JSON content
+            var response = await httpClient.PutAsJsonAsync(relativeUrl, obj);
+
+            // Ensures that the HTTP response indicates success (status code 2xx)
+            response.EnsureSuccessStatusCode();
+        }
+
     }
 }

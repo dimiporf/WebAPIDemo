@@ -49,15 +49,39 @@ namespace WebApp.Controllers
             return View(shirt);
         }
 
+        // Retrieves the details of a shirt with the specified ID from the API and displays the details in a view for updating
         public async Task<IActionResult> UpdateShirt(int shirtId)
         {
+            // Invoke the API to get the details of the shirt with the specified ID
             var shirt = await webApiExecuter.InvokeGet<Shirt>($"shirts/{shirtId}");
 
+            // If the shirt details are found, display them in the view for updating
             if (shirt != null)
             {
                 return View(shirt);
             }
+
+            // If the shirt with the specified ID is not found, return a 404 Not Found response
             return NotFound();
         }
+
+        // Handles the POST request to update the shirt details
+        [HttpPost]
+        public async Task<IActionResult> UpdateShirt(Shirt shirt)
+        {
+            // Check if the model state is valid
+            if (ModelState.IsValid)
+            {
+                // Invoke the API to update the shirt details
+                await webApiExecuter.InvokePut($"shirts/{shirt.ShirtId}", shirt);
+
+                // Redirect to the index action after successful update
+                return RedirectToAction(nameof(Index));
+            }
+
+            // If the model state is not valid, return the view with the shirt model to display validation errors
+            return View(shirt);
+        }
+
     }
 }

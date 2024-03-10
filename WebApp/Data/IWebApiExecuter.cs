@@ -8,5 +8,10 @@
 
         // Invokes an HTTP POST request to the specified relative URL of the API with the provided object as content
         Task<T?> InvokePost<T>(string relativeUrl, T obj);
+
+        // Asynchronously sends an HTTP PUT request to the specified relative URL of the API with the provided object as content
+        // and returns a Task representing the asynchronous operation
+        Task InvokePut<T>(string relativeUrl, T obj);
+
     }
 }
