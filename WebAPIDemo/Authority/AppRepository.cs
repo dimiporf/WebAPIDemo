@@ -17,14 +17,7 @@ namespace WebAPIDemo.Authority
                 Scopes = "read,write"
             }
         };
-
-        // Method to authenticate an application based on provided clientId and secret
-        public static bool Authenticate(string clientId, string secret)
-        {
-            // Checking if any application matches the provided clientId and secret
-            return _applications.Any(x => x.ClientId == clientId && x.Secret == secret);
-        }
-
+        
         // Method to retrieve application details based on provided clientId
         public static Application? GetApplicationByClientId(string clientId)
         {

@@ -26,59 +26,32 @@ namespace WebAPIDemo.Controllers
         public IActionResult Authenticate([FromBody] AppCredential credential)
         {
             // Authenticate the application using provided credentials
-            if (AppRepository.Authenticate(credential.ClientId, credential.Secret))
+            if (Authenticator.Authenticate(credential.ClientId, credential.Secret))
             {
                 var expiresAt = DateTime.UtcNow.AddMinutes(10);
 
                 // If authentication is successful, return an access token with expiration time
                 return Ok(new
                 {
-                    access_token = CreateToken(credential.ClientId, expiresAt),
+                    access_token = Authenticator.CreateToken(credential.ClientId, expiresAt, configuration.GetValue<string>("SecretKey")),
                     expires_at = expiresAt
                 });
             }
             else
             {
-                // If authentication fails, return unauthorized status with error details
+                // If authentication fails, add an error to the ModelState indicating unauthorized access
                 ModelState.AddModelError("Unauthorized", "You are not authorized.");
 
+                // Create a ValidationProblemDetails object with the unauthorized status code
                 var problemDetails = new ValidationProblemDetails(ModelState)
                 {
                     Status = StatusCodes.Status401Unauthorized
                 };
+
+                // Return an UnauthorizedObjectResult with the problem details
                 return new UnauthorizedObjectResult(problemDetails);
             }
-        }
 
-        // Helper method to create a token for the authenticated application
-        private string CreateToken(string clientId, DateTime expiresAt)
-        {
-            // Retrieve application details based on client ID
-            var app = AppRepository.GetApplicationByClientId(clientId);
-
-            // Define claims for the token payload
-            var claims = new List<Claim>
-            {
-                new Claim("AppName", app?.ApplicationName ?? string.Empty),
-                new Claim("Read", (app?.Scopes ?? string.Empty).Contains("read") ? "true" : "false"),
-                new Claim("Write", (app?.Scopes ?? string.Empty).Contains("write") ? "true" : "false")
-            };
-
-            // Get the secret key from configuration
-            var secretKey = Encoding.ASCII.GetBytes(configuration.GetValue<string>("SecretKey"));
-
-            // Create the JWT token with claims, expiration, and signing credentials
-            var jwt = new JwtSecurityToken(
-                signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(secretKey),
-                    SecurityAlgorithms.HmacSha256Signature),
-                claims: claims,
-                expires: expiresAt,
-                notBefore: DateTime.UtcNow
-            );
-
-            // Write the token as a string
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
     }
 }
