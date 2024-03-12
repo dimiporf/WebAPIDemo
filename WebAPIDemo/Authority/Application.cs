@@ -14,5 +14,8 @@
 
         // Secret key associated with the application
         public string? Secret { get; set; }
+
+        // Scopes or permissions associated with the application
+        public string? Scopes { get; set; }
     }
 }
