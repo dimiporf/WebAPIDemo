@@ -23,6 +23,22 @@ builder.Services.AddHttpClient("AuthorityApi", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
+// Add services for configuring cookie & token fine tuning
+builder.Services.AddSession(options =>
+{
+    // Configure session cookie to be accessible only through HTTP
+    options.Cookie.HttpOnly = true;
+
+    // Set session timeout to 1 hour
+    options.IdleTimeout = TimeSpan.FromHours(1);
+
+    // Mark the session cookie as essential for the application's operation
+    options.Cookie.IsEssential = true;
+});
+
+// Add HttpContextAccessor to provide access to HttpContext within the application
+builder.Services.AddHttpContextAccessor();
+
 // Register the WebApiExecuter as a transient service for dependency injection.
 builder.Services.AddTransient<IWebApiExecuter, WebApiExecuter>();
 
@@ -46,6 +62,9 @@ app.UseRouting();
 
 // Enable authorization middleware.
 app.UseAuthorization();
+
+// Enable sessions for api authorization tokens
+app.UseSession();
 
 // Configure controller routing.
 app.MapControllerRoute(
