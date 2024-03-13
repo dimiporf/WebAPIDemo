@@ -150,6 +150,17 @@ namespace WebApp.Controllers
                     ModelState.AddModelError(error.Key, string.Join("; ", error.Value));
                 }
             }
+            // Check if the error response is not null
+            else if (ex.ErrorResponse != null)
+            {
+                // Add model error with the error response title
+                ModelState.AddModelError("Error", ex.ErrorResponse.Title);
+            }
+            else
+            {
+                // Add model error with the exception message
+                ModelState.AddModelError("Error", ex.Message);
+            }
         }
     }
 }

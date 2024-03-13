@@ -62,6 +62,12 @@ namespace WebAPIDemo.Authority
                 return false;
             }
 
+            //Remove Bearer intro from Json token
+            if (token.StartsWith("Bearer"))
+            {
+                token = token.Substring(6).Trim();
+            }
+
             // Get the secret key as bytes
             var secretKey = Encoding.ASCII.GetBytes(strSecretKey);
 

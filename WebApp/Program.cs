@@ -14,6 +14,15 @@ builder.Services.AddHttpClient("ShirtsApi", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
+// Add services for authorization implementation.
+builder.Services.AddHttpClient("AuthorityApi", client =>
+{
+    // Configure HttpClient to use the base address of the authority API.
+    client.BaseAddress = new Uri("https://localhost:7281/");
+    // Add an Accept header to indicate that the client expects JSON responses.
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 // Register the WebApiExecuter as a transient service for dependency injection.
 builder.Services.AddTransient<IWebApiExecuter, WebApiExecuter>();
 
