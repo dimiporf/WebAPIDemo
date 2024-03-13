@@ -53,5 +53,62 @@ namespace WebAPIDemo.Authority
             // Write the token as a string
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
+
+        public static bool VerifyToken(string token, string strSecretKey)
+        {
+            // Check if the token is null or empty
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return false;
+            }
+
+            // Get the secret key as bytes
+            var secretKey = Encoding.ASCII.GetBytes(strSecretKey);
+
+            SecurityToken securityToken;
+
+            try
+            {
+                // Create a new instance of JwtSecurityTokenHandler
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                // Validate the token using the provided token validation parameters
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    // Specify that the issuer signing key must be validated
+                    ValidateIssuerSigningKey = true,
+
+                    // Set the issuer signing key to the provided symmetric key
+                    IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+
+                    // Specify that the token's lifetime must be validated
+                    ValidateLifetime = true,
+
+                    // Specify that the audience does not need to be validated
+                    ValidateAudience = false,
+
+                    // Specify that the issuer does not need to be validated
+                    ValidateIssuer = false,
+
+                    // Set the clock skew to zero to ensure the token is not expired
+                    ClockSkew = TimeSpan.Zero
+                },
+                out securityToken);
+            }
+            catch (SecurityTokenException)
+            {
+                // If there's a SecurityTokenException, return false
+                return false;
+            }
+            catch
+            {
+                // If there's any other exception, rethrow it
+                throw;
+            }
+
+            // Return true if the security token is not null
+            return securityToken != null;
+        }
+
     }
 }
