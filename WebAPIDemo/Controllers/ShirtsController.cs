@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using WebAPIDemo.Attributes;
 using WebAPIDemo.Data;
 using WebAPIDemo.Filters;
 using WebAPIDemo.Filters.ActionFilters;
@@ -28,6 +29,7 @@ namespace WebAPIDemo.Controllers
 
         // GET: api/Shirts
         [HttpGet]
+        [RequiredClaim("read","true")]
         public IActionResult GetShirts()
         {
             // Retrieve all shirts from the database
@@ -46,6 +48,7 @@ namespace WebAPIDemo.Controllers
         // POST: api/Shirts
         [HttpPost]
         [TypeFilter(typeof(Shirt_ValidateCreateShirtFilterAttribute))] // Validate input for creating a shirt
+        [RequiredClaim("write", "true")]
         public IActionResult CreateShirt([FromBody] Shirt shirt)
         {
             // Add a new shirt to the database
@@ -63,6 +66,7 @@ namespace WebAPIDemo.Controllers
         [TypeFilter(typeof(Shirt_ValidateShirtIdFilterAttribute))] // Validate shirt ID
         [Shirt_ValidateUpdateShirtFilter] // Validate input for updating a shirt
         [TypeFilter(typeof(Shirt_HandleUpdateExceptionsFilterAttribute))] //Validate exceptions during shirt update
+        [RequiredClaim("write", "true")]
         public IActionResult UpdateShirt(int id, Shirt shirt)
         {
             // Update an existing shirt in the repository
@@ -83,6 +87,7 @@ namespace WebAPIDemo.Controllers
         // DELETE: api/Shirts/5
         [HttpDelete("{id}")]
         [TypeFilter(typeof(Shirt_ValidateShirtIdFilterAttribute))] // Validate shirt ID
+        [RequiredClaim("delete", "true")]
         public IActionResult DeleteShirt(int id)
         {
             // Retrieve the shirt to be deleted

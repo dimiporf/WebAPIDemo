@@ -33,9 +33,23 @@ namespace WebAPIDemo.Authority
             var claims = new List<Claim>
             {
                 new Claim("AppName", app?.ApplicationName ?? string.Empty),
-                new Claim("Read", (app?.Scopes ?? string.Empty).Contains("read") ? "true" : "false"),
-                new Claim("Write", (app?.Scopes ?? string.Empty).Contains("write") ? "true" : "false")
+               
             };
+
+            // Split the scopes string into an array of individual scope strings
+            var scopes = app?.Scopes?.Split(",");
+
+            // Check if the scopes array is not null and contains elements
+            if (scopes != null && scopes.Length > 0)
+            {
+                // Iterate over each scope in the scopes array
+                foreach (var scope in scopes)
+                {
+                    // Add a claim for each scope to the claims list, converting the scope to lowercase
+                    claims.Add(new Claim(scope.ToLower(), "true"));
+                }
+            }
+
 
             // Get the secret key from configuration
             var secretKey = Encoding.ASCII.GetBytes(strSecretKey);
@@ -54,12 +68,12 @@ namespace WebAPIDemo.Authority
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
 
-        public static bool VerifyToken(string token, string strSecretKey)
+        public static IEnumerable<Claim>? VerifyToken(string token, string strSecretKey)
         {
             // Check if the token is null or empty
             if (string.IsNullOrWhiteSpace(token))
             {
-                return false;
+                return null;
             }
 
             //Remove Bearer intro from Json token
@@ -100,20 +114,29 @@ namespace WebAPIDemo.Authority
                     ClockSkew = TimeSpan.Zero
                 },
                 out securityToken);
+
+                // Check if the security token is not null
+                if (securityToken != null)
+                {
+                    // Read the claims from the JWT token
+                    var tokenObject = tokenHandler.ReadJwtToken(token);
+                    return tokenObject.Claims ?? (new List<Claim>());
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (SecurityTokenException)
             {
                 // If there's a SecurityTokenException, return false
-                return false;
+                return null;
             }
             catch
             {
                 // If there's any other exception, rethrow it
                 throw;
             }
-
-            // Return true if the security token is not null
-            return securityToken != null;
         }
 
     }
