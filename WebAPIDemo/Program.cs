@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using WebAPIDemo.Data;
@@ -15,6 +16,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddApiVersioning(options =>
+{
+    // Assume default version when not specified
+    options.AssumeDefaultVersionWhenUnspecified = true;
+
+    // Set the default API version to 1.0
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+});
+
+
 
 // Add API explorer services
 builder.Services.AddEndpointsApiExplorer();
