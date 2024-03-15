@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using WebAPIDemo.Data;
+using WebAPIDemo.Filters.OperationFilters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 // Add Swagger generation services
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    // Apply the AuthorizationHeaderOperationFilter to add Bearer token authorization to all Swagger operations
+    c.OperationFilter<AuthorizationHeaderOperationFilter>();
+
+    // Define the security definition for Bearer token authentication
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        // Specify the authentication scheme as Bearer
+        Scheme = "Bearer",
+
+        // Set the type of security scheme to HTTP
+        Type = SecuritySchemeType.Http,
+
+        // Specify the format of the Bearer token as JWT (JSON Web Token)
+        BearerFormat = "JWT",
+
+        // Define the location of the Bearer token, which is in the header of the HTTP request
+        In = ParameterLocation.Header
+    });
+});
 
 
 var app = builder.Build();
