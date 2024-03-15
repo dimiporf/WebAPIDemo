@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using WebAPIDemo.Data;
@@ -24,6 +25,9 @@ builder.Services.AddApiVersioning(options =>
 
     // Set the default API version to 1.0
     options.DefaultApiVersion = new ApiVersion(1, 0);
+
+    // Set the API version reader to read the API version from the "X-API-Version" header
+    options.ApiVersionReader = new HeaderApiVersionReader("X-API-Version");
 });
 
 
