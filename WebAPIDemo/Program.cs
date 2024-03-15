@@ -14,9 +14,26 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Add API explorer services
+builder.Services.AddEndpointsApiExplorer();
+
+// Add Swagger generation services
+builder.Services.AddSwaggerGen();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+if (app.Environment.IsDevelopment())
+{
+    // Enable Swagger middleware to serve the generated Swagger JSON document
+    app.UseSwagger();
+
+    // Enable Swagger UI middleware to serve the Swagger UI interactive documentation
+    app.UseSwaggerUI();
+}
+
 
 app.UseHttpsRedirection();
 
