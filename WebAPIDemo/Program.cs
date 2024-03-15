@@ -20,6 +20,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddApiVersioning(options =>
 {
+    // Report available versions
+    options.ReportApiVersions = true;
+
     // Assume default version when not specified
     options.AssumeDefaultVersionWhenUnspecified = true;
 
