@@ -41,6 +41,11 @@ builder.Services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'
 // Add Swagger generation services
 builder.Services.AddSwaggerGen(c =>
 {
+    // Define Swagger documentation for API versions
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My Web API v1", Version = "version 1" });
+    c.SwaggerDoc("v2", new OpenApiInfo { Title = "My Web API v2", Version = "version 2" });
+
+
     // Apply the AuthorizationHeaderOperationFilter to add Bearer token authorization to all Swagger operations
     c.OperationFilter<AuthorizationHeaderOperationFilter>();
 
@@ -76,6 +81,7 @@ if (app.Environment.IsDevelopment())
         options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI v1");
+            options.SwaggerEndpoint("/swagger/v2/swagger.json", "WebAPI v2");
         });
 }
 
