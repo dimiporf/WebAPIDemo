@@ -34,9 +34,9 @@ builder.Services.AddApiVersioning(options =>
 });
 
 
+// Configure the API explorer to format group names as 'v' followed by the API version in a readable format
+builder.Services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
 
-// Add API explorer services
-builder.Services.AddEndpointsApiExplorer();
 
 // Add Swagger generation services
 builder.Services.AddSwaggerGen(c =>
@@ -72,7 +72,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
 
     // Enable Swagger UI middleware to serve the Swagger UI interactive documentation
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(
+        options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI v1");
+        });
 }
 
 
