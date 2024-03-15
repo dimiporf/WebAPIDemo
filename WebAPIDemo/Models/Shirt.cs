@@ -12,6 +12,9 @@ namespace WebAPIDemo.Models
         [Required(ErrorMessage = "Brand is required.")]
         public string? Brand { get; set; }
 
+        // Added for versioning training
+        public string? Description { get; set; }
+
         // Color of the shirt (required field)
         [Required(ErrorMessage = "Color is required.")]
         public string? Color { get; set; }
@@ -25,5 +28,11 @@ namespace WebAPIDemo.Models
 
         // Price of the shirt (nullable)
         public double? Price { get; set; }
+
+        // Validates the description by checking if it is not null or empty (Added for versioning training)
+        public bool ValidateDescription()
+        {
+            return !string.IsNullOrEmpty(Description);
+        }
     }
 }
